@@ -11,7 +11,7 @@ export const accountAuthHandler = async (req, res) => {
   try {
     const token = req.cookies?.token;
     console.log(req.cookies);
-
+    
     if (!token) {
       return res
         .status(401)
@@ -55,7 +55,6 @@ export const newAccountHandler = async (req, res) => {
       password: hashedPassword,
     });
 
-    // create token
     const token = jwt.sign(
       { userId: createdUser._id },
       process.env.JWT_SECRET_KEY,
@@ -64,9 +63,9 @@ export const newAccountHandler = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days
+      maxAge: 3 * 24 * 60 * 60 * 1000,
       sameSite: "Lax",
-      secure: false, // set to true in production with HTTPS
+      secure: false,
     });
 
     return res
@@ -123,13 +122,12 @@ export const loginAccountHandler = async (req, res) => {
   }
 };
 
-// In your auth controller (Node.js + Express)
 export const logoutHandler = (req, res) => {
   try {
     res.clearCookie("token", {
     httpOnly: true,
     sameSite: "Lax",
-    secure: false, // set true in production with HTTPS
+    secure: false,
   });
   return res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {

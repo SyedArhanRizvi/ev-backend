@@ -18,7 +18,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: ["http://localhost:5173", "https://ev-frontend-flax.vercel.app"],
-    credentials: true, // Include credentials if using cookies
+    credentials: true, 
   })
 );
 
