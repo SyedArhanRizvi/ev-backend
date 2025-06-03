@@ -16,7 +16,7 @@ const EVStationSchema = new Schema(
         required:true
     },
     powerOutput: {
-        type:Number,
+        type:String,
         required:true
     },
     connectorType: {

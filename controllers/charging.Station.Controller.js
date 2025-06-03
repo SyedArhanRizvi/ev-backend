@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET_KEY;
-export const getAllChargingStationHandler = async () => {
+export const getAllChargingStationHandler = async (req, res) => {
   try {
     const allEVStations = await EVStationModel.find({});
     if (!allEVStations) {
@@ -22,26 +22,15 @@ export const getAllChargingStationHandler = async () => {
   }
 };
 export const addNewChargingStationHandler = async (req, res) => {
-  const token = req.cookies?.token;
-  const { name, lat, lng, status, powerOutput, connectorType } = req.body;
-  if (!name || !lat || !lng || !status || !powerOutput || !connectorType) {
-    console.log(name, lat, lng, status, powerOutput, connectorType);
+  let { name, location, status, powerOutput, connectorType } = req.body;
+  console.log(req.body);
+
+  if (!name || !location || !status || !powerOutput || !connectorType) {
+    console.log(name, location, status, powerOutput, connectorType);
     return res.status(404).json({ message: "All fields are required." });
   }
-  if (!token) {
-    return res.status(401).json({ message: "Please login or create account." });
-  }
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const user = await UserModel.findById(decoded.userId).select("-password");
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found." });
-    }
-    const location = {
-      lat: parseFloat(lat),
-      lng: parseFloat(lng),
-    };
+  try {
     const newEVStation = await EVStationModel.create({
       name,
       location,
@@ -79,28 +68,16 @@ export const deleteChargingStationHandler = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error." });
   }
 };
-export const updatePrevChargingStationHandler = async () => {
+export const updatePrevChargingStationHandler = async (req, res) => {
   const { id } = req.params;
-  const token = req.cookies?.token;
-  const { name, lat, lng, status, powerOutput, connectorType } = req.body;
-  if (!name || !lat || !lng || !status || !powerOutput || !connectorType || !id) {
-    console.log(name, lat, lng, status, powerOutput, connectorType, id);
+  console.log(id);
+  
+  let { name, location, status, powerOutput, connectorType } = req.body;
+  if (!name || !location || !status || !powerOutput || !connectorType || !id) {
+    console.log(name, status, powerOutput, connectorType, id);
     return res.status(404).json({ message: "All fields are required." });
   }
-  if (!token) {
-    return res.status(401).json({ message: "Please login or create account." });
-  }
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const user = await UserModel.findById(decoded.userId).select("-password");
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found." });
-    }
-    const location = {
-      lat: parseFloat(lat),
-      lng: parseFloat(lng),
-    };
     const updatedStation = await EVStationModel.findByIdAndUpdate(id, {
       name,
       location,
